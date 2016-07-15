@@ -21,6 +21,8 @@ public class TabFragment extends Fragment {
     private static final String DESC = "DESC";
     private String text;
     private String TAG = this.getClass().getSimpleName();
+    private static int count = 0;
+    private int[][]memo = new int[1024][1024];
 
     public static TabFragment newInstance(String desc) {
         TabFragment fragment = new TabFragment();
@@ -34,6 +36,8 @@ public class TabFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         text = getArguments().getString(DESC);
+        count++;
+        Log.e(TAG, "count "+count);
     }
 
     @Nullable
@@ -53,6 +57,20 @@ public class TabFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Log.e(TAG, this.toString() + " destroied " + text);
+        Log.e(TAG, this.toString() + " onDestroyView " + text);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.e(TAG, this.toString() + " onDestroy " + text);
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        Log.e(TAG, this.toString() + " finalize " + text);
+        count--;
+        Log.e(TAG, "count "+count);
     }
 }
