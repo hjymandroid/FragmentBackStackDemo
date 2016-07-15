@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/addlayer"
+        android:title="add layer"></item>
+    <item
+        android:id="@+id/removelayer"
+        android:title="remove layer"></item>
+
+    <item
+        android:id="@+id/clear_layer"
+        android:title="clear layer"></item>
+</menu>

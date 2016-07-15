@@ -5,6 +5,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -72,5 +75,25 @@ public class TabFragment extends Fragment {
         Log.e(TAG, this.toString() + " finalize " + text);
         count--;
         Log.e(TAG, "count "+count);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.main_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.addlayer:
+
+                break;
+            case R.id.removelayer:
+                break;
+            case R.id.clear_layer:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
