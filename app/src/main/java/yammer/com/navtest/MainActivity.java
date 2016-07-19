@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setAdapter(adapter);
         viewPager.setPageTransformer(false, new NoPageTransformer());
 
-        viewPager.setOffscreenPageLimit(3);
+        viewPager.setOffscreenPageLimit(4);
         navigationBar
                 .addItem(new BottomNavigationItem(R.drawable.ic_account_box_black_24dp, "Account"))
                 .addItem(new BottomNavigationItem(R.drawable.ic_assignment_black_24dp, "Assignment"))
@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         navigationBar.setTabSelectedListener(new BottomNavigationBar.OnTabSelectedListener() {
             @Override
             public void onTabSelected(int position) {
-                viewPager.setCurrentItem(position);
+                viewPager.setCurrentItem(position, false);
             }
 
             @Override
