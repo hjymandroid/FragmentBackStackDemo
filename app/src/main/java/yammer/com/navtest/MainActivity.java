@@ -4,9 +4,12 @@ import android.support.v4.app.*;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
 import com.ashokvarma.bottomnavigation.BottomNavigationBar;
 import com.ashokvarma.bottomnavigation.BottomNavigationItem;
@@ -15,6 +18,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
+    String TAG = MainActivity.this.getClass().getSimpleName();
     @BindView(R.id.bottom_navigation_bar)
     BottomNavigationBar navigationBar;
     @BindView(R.id.viewpager)
@@ -28,7 +32,9 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         adapter = new TabsAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
-        viewPager.setOffscreenPageLimit(1);
+        viewPager.setPageTransformer(false, new NoPageTransformer());
+
+        viewPager.setOffscreenPageLimit(3);
         navigationBar
                 .addItem(new BottomNavigationItem(R.drawable.ic_account_box_black_24dp, "Account"))
                 .addItem(new BottomNavigationItem(R.drawable.ic_assignment_black_24dp, "Assignment"))
@@ -61,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
+            Log.e(TAG, String.valueOf(position) + " tab creation");
             return TabFragment.newInstance(String.valueOf(position));
         }
 
@@ -71,11 +78,33 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
-        return true;
+    public void onBackPressed() {
+        // Check the
+        TabFragment currentFragment = getCurrentFragment();
+        if (currentFragment.onBackPressHandled()) {
+            return;
+        } else {
+            Toast.makeText(this, "Let's handle back click", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        //super.onBackPressed();
     }
 
+    private TabFragment getCurrentFragment() {
+        TabFragment fragment = (TabFragment) adapter.instantiateItem(null, viewPager.getCurrentItem());
+        return fragment;
+    }
 
+    private static class NoPageTransformer implements ViewPager.PageTransformer {
+        public void transformPage(View view, float position) {
+            if (position < 0) {
+                view.setScrollX((int)((float)(view.getWidth()) * position));
+            } else if (position > 0) {
+                view.setScrollX(-(int) ((float) (view.getWidth()) * -position));
+            } else {
+                view.setScrollX(0);
+            }
+        }
+    }
 }

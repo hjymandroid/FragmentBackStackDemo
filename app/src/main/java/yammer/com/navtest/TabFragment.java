@@ -3,6 +3,8 @@ package yammer.com.navtest;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -25,7 +27,6 @@ public class TabFragment extends Fragment {
     private String text;
     private String TAG = this.getClass().getSimpleName();
     private static int count = 0;
-    private int[][]memo = new int[1024][1024];
 
     public static TabFragment newInstance(String desc) {
         TabFragment fragment = new TabFragment();
@@ -38,9 +39,10 @@ public class TabFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         text = getArguments().getString(DESC);
         count++;
-        Log.e(TAG, "count "+count);
+        Log.e(TAG, "count " + count);
     }
 
     @Nullable
@@ -74,7 +76,7 @@ public class TabFragment extends Fragment {
         super.finalize();
         Log.e(TAG, this.toString() + " finalize " + text);
         count--;
-        Log.e(TAG, "count "+count);
+        Log.e(TAG, "count " + count);
     }
 
     @Override
@@ -85,15 +87,41 @@ public class TabFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Log.e(TAG, "onOptionsItemSelected" + TAG);
         switch (item.getItemId()) {
             case R.id.addlayer:
-
-                break;
-            case R.id.removelayer:
+                addFragment();
                 break;
             case R.id.clear_layer:
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
+
+    protected void addFragment() {
+        int count = getChildFragmentManager().getBackStackEntryCount();
+        String title = "tab-" +text+" child" + "-" + count;
+        Fragment fragment = PageFragment.newInstance(title);
+        FragmentManager cfm = getChildFragmentManager();
+        FragmentTransaction ft = cfm.beginTransaction();
+        ft.replace(R.id.fragment_inner_content, fragment, title).addToBackStack(title);
+        ft.commit();
+        count++;
+    }
+
+
+    public boolean onBackPressHandled() {
+        FragmentManager fm = getChildFragmentManager();
+        int count = fm.getBackStackEntryCount();
+        Log.e(TAG, "stack size" + String.valueOf(count));
+        if (count != 0) { // no more view on it now, lets give it to the base nav stack
+            // lets roll back to previous fragment
+            fm.popBackStack();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
 }
