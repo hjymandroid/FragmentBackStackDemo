@@ -28,7 +28,6 @@ public class PageFragment extends Fragment {
 
     private List<AppInfo> applicationList = new ArrayList<AppInfo>();
 
-
     private ApplicationAdapter mAdapter;
     private RecyclerView mRecyclerView;
     @BindView(R.id.desc)

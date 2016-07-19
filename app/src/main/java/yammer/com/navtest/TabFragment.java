@@ -116,7 +116,7 @@ public class TabFragment extends Fragment {
         Log.e(TAG, "stack size" + String.valueOf(count));
         if (count != 0) { // no more view on it now, lets give it to the base nav stack
             // lets roll back to previous fragment
-            fm.popBackStack();
+            fm.popBackStackImmediate();
             return true;
         } else {
             return false;
