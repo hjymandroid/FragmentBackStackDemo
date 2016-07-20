@@ -1,5 +1,6 @@
 package yammer.com.navtest;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.os.AsyncTask;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,8 +28,7 @@ import butterknife.ButterKnife;
  */
 public class PageFragment extends Fragment {
 
-    private List<AppInfo> applicationList = new ArrayList<AppInfo>();
-
+    private static List<AppInfo> applicationList = new ArrayList<AppInfo>();
     private ApplicationAdapter mAdapter;
     private RecyclerView mRecyclerView;
     @BindView(R.id.desc)
@@ -73,13 +74,16 @@ public class PageFragment extends Fragment {
 
         mAdapter = new ApplicationAdapter(new ArrayList<AppInfo>(), R.layout.row_application, getActivity());
         mRecyclerView.setAdapter(mAdapter);
-        new InitializeApplicationsTask().execute();
+        new InitializeApplicationsTask(mAdapter, mRecyclerView, getActivity()).execute();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         Log.e(TAG, this.toString() + " onDestroyView " + text);
+        mRecyclerView = null;
+        desc = null;
+        mAdapter = null;
     }
 
     @Override
@@ -99,11 +103,20 @@ public class PageFragment extends Fragment {
     /**
      * A simple AsyncTask to load the list of applications and display them
      */
-    private class InitializeApplicationsTask extends AsyncTask<Void, Void, Void> {
+    private static class InitializeApplicationsTask extends AsyncTask<Void, Void, Void> {
+        WeakReference<RecyclerView> mRecyclerView;
+        WeakReference<ApplicationAdapter> mAdapter;
+        WeakReference<Activity> activity;
+
+        public InitializeApplicationsTask(ApplicationAdapter mAdapter, RecyclerView mRecyclerView, Activity activity) {
+            this.mAdapter = new WeakReference(mAdapter);
+            this.mRecyclerView = new WeakReference<RecyclerView>(mRecyclerView);
+            this.activity = new WeakReference<Activity>(activity);
+        }
 
         @Override
         protected void onPreExecute() {
-            mAdapter.clearApplications();
+            mAdapter.get().clearApplications();
             super.onPreExecute();
         }
 
@@ -115,9 +128,9 @@ public class PageFragment extends Fragment {
             final Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
             mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 
-            List<ResolveInfo> ril = getActivity().getPackageManager().queryIntentActivities(mainIntent, 0);
+            List<ResolveInfo> ril = activity.get().getPackageManager().queryIntentActivities(mainIntent, 0);
             for (ResolveInfo ri : ril) {
-                applicationList.add(new AppInfo(getActivity(), ri));
+                applicationList.add(new AppInfo(activity.get(), ri));
             }
             Collections.sort(applicationList);
 
@@ -132,12 +145,12 @@ public class PageFragment extends Fragment {
         @Override
         protected void onPostExecute(Void result) {
             //handle visibility
-            mRecyclerView.setVisibility(View.VISIBLE);
-           // mProgressBar.setVisibility(View.GONE);
+            mRecyclerView.get().setVisibility(View.VISIBLE);
+            // mProgressBar.setVisibility(View.GONE);
 
             //set data for list
-            mAdapter.addApplications(applicationList);
-           // mSwipeRefreshLayout.setRefreshing(false);
+            mAdapter.get().addApplications(applicationList);
+            // mSwipeRefreshLayout.setRefreshing(false);
 
             super.onPostExecute(result);
         }

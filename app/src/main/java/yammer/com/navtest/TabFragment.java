@@ -104,6 +104,7 @@ public class TabFragment extends Fragment {
         Fragment fragment = PageFragment.newInstance(title);
         FragmentManager cfm = getChildFragmentManager();
         FragmentTransaction ft = cfm.beginTransaction();
+        // here it makes a difference
         ft.replace(R.id.fragment_inner_content, fragment, title).addToBackStack(title);
         ft.commit();
         count++;

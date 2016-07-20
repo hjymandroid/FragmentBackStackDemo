@@ -13,11 +13,11 @@
         android:gravity="center"
         android:text="Test" />
 
-    <android.support.v7.widget.RecyclerView
+    <yammer.com.navtest.CustomRecyclerView
         android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/desc"></android.support.v7.widget.RecyclerView>
+        android:layout_below="@+id/desc"></yammer.com.navtest.CustomRecyclerView>
 
 
 </RelativeLayout>
