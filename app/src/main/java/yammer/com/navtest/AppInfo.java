@@ -152,7 +152,11 @@ public class AppInfo implements Comparable<Object> {
             Resources engRes = getEnglishRessources(res);
 
             if (ri.activityInfo.labelRes != 0) {
-                name = engRes.getString(ri.activityInfo.labelRes);
+                try {
+                    name = engRes.getString(ri.activityInfo.labelRes);
+                }catch (Exception e) {
+                    e.printStackTrace();
+                }
 
                 if (name == null || name.equals("")) {
                     name = res.getString(ri.activityInfo.labelRes);

@@ -14,6 +14,8 @@ import android.widget.Toast;
 import com.ashokvarma.bottomnavigation.BottomNavigationBar;
 import com.ashokvarma.bottomnavigation.BottomNavigationItem;
 
+import java.util.Stack;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -24,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.viewpager)
     ViewPager viewPager;
     private TabsAdapter adapter;
+    private Stack<Integer> navTabStack = new Stack<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +36,6 @@ public class MainActivity extends AppCompatActivity {
         adapter = new TabsAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
         viewPager.setPageTransformer(false, new NoPageTransformer());
-
         viewPager.setOffscreenPageLimit(4);
         navigationBar
                 .addItem(new BottomNavigationItem(R.drawable.ic_account_box_black_24dp, "Account"))
@@ -42,10 +44,10 @@ public class MainActivity extends AppCompatActivity {
                 .addItem(new BottomNavigationItem(R.drawable.ic_border_all_black_24dp, "Border"))
                 .addItem(new BottomNavigationItem(R.drawable.ic_add_shopping_cart_black_24dp, "Shopping"))
                 .initialise();
-
         navigationBar.setTabSelectedListener(new BottomNavigationBar.OnTabSelectedListener() {
             @Override
             public void onTabSelected(int position) {
+                navTabStack.push(viewPager.getCurrentItem());
                 viewPager.setCurrentItem(position, false);
             }
 
@@ -85,7 +87,13 @@ public class MainActivity extends AppCompatActivity {
             return;
         } else {
             Toast.makeText(this, "Let's handle back click", Toast.LENGTH_SHORT).show();
-            return;
+            if (navTabStack.size() < 1) {
+                super.onBackPressed();
+            } else {
+                int index = navTabStack.pop();
+                navigationBar.selectTab(index,false);
+                viewPager.setCurrentItem(index, false);
+            }
         }
 
         //super.onBackPressed();
@@ -99,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
     private static class NoPageTransformer implements ViewPager.PageTransformer {
         public void transformPage(View view, float position) {
             if (position < 0) {
-                view.setScrollX((int)((float)(view.getWidth()) * position));
+                view.setScrollX((int) ((float) (view.getWidth()) * position));
             } else if (position > 0) {
                 view.setScrollX(-(int) ((float) (view.getWidth()) * -position));
             } else {
